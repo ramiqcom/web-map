@@ -1,0 +1,7 @@
+[
+	{ "label": "OpenStreetMap", "value": "https://tile.openstreetmap.org/{z}/{x}/{y}.png" },
+	{ "label": "Google Map", "value": "https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}" },
+	{ "label": "Google Satellite", "value": "http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}" },
+	{ "label": "ESRI Topography", "value": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}" },
+	{ "label": "ESRI Satellite", "value": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" }
+]
