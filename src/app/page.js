@@ -7,6 +7,7 @@ import shpjs from 'shpjs';
 import { kml } from '@mapbox/togeojson';
 import Layers from './components/layers';
 import basemaps from './data/basemap.json' assert { type: 'json' }
+import Image from './components/image';
 
 // Context
 export const Context = createContext();
@@ -23,17 +24,29 @@ export default function Home() {
   // Map ref
   const mapRef = useRef();
 
+  // GeoJSON ref
+  const geojsonRef = useRef();
+
   // GeoJSON data to add to map
   const [ geojson, setGeojson ] = useState(undefined);
 
   // Basemap selected
   const [ basemap, setBasemap ] = useState(basemaps[0]);
 
+  // Url
+  const [ imageUrl, setImageUrl ] = useState('');
+
+  // Image opacity
+  const [ imageOpacity, setImageOpacity ] = useState(1);
+
   // All the states
   const states = {
     mapRef,
+    geojsonRef,
     geojson, setGeojson,
-    basemap, setBasemap
+    basemap, setBasemap,
+    imageUrl, setImageUrl,
+    imageOpacity, setImageOpacity
   };
 
   // Use effect to disable window default process
@@ -54,9 +67,9 @@ export default function Home() {
         const name = fileName.at(0);
         const format = fileName.at(-1);
         const geojson = await convert(file, format);
-        console.log(geojson);
+        setGeojson(geojson);
       } catch (error) {
-        console.log(error.message);
+        throw new Error(error);
       }
       
     };
@@ -93,8 +106,9 @@ export default function Home() {
     <>
       <Context.Provider value={states}>
         
-        <div>
-          <Layers/>
+        <div className='flexible gap vertical' id='float'>
+          <Layers />
+          <Image />
         </div>
 
         <MapCanvas />
@@ -109,6 +123,6 @@ function LoadingMap() {
   return (
     <div id='loading' className='flexible center1 center2'>
       Loading...
-    </div>  
+    </div> 
   )
 }

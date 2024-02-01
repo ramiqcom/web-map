@@ -7,10 +7,36 @@ body {
 	display: flex;
 	width: 100%;
 	height: 100vh;
+	font-size: medium;
+}
+
+button {
+	height: 3vh;
+	font-size: medium;
+}
+
+input[type='checkbox'] {
+	display: flex;
 }
 
 .flexible {
 	display: flex;
+}
+
+.vertical {
+	flex-direction: column;
+}
+
+.wide {
+	justify-content: space-between;
+}
+
+.gap {
+	gap: 2vh;
+}
+
+.small-gap {
+	gap: 1vh;
 }
 
 .center1 {
@@ -35,12 +61,15 @@ body {
 	height: 100%;
 }
 
-#layers {
+#float {
 	z-index: 9999999999;
 	position: absolute;
 	display: flex;
-	background-color: white;
-	height: 10vh;
-	padding: 1%;
 	margin: 1%;
+}
+
+.float-panel {
+	background-color: white;
+	padding: 5%;
+	width: 40vh;
 }

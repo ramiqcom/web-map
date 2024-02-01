@@ -1,3 +1,4 @@
+import * as L from 'leaflet';
 import geojsonvt from 'geojson-vt';
 
 L.GeoJSON.VT = L.GridLayer.extend({

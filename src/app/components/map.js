@@ -1,19 +1,31 @@
 import * as L from 'leaflet';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { Context } from '../page';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, forwardRef } from 'react';
+import vt from './vt';
 
 // Leaflet map div
 export default function WebMap() {
 	// Context data
-	const { mapRef, geojson, basemap } = useContext(Context);
+	const { 
+		mapRef, 
+		geojsonRef, 
+		geojson, 
+		basemap,
+		imageUrl,
+		imageOpacity
+	} = useContext(Context);
 
 	return (
 		<MapContainer id='map' zoom={5} center={{ lat: 50, lng: 1 }} maxZoom={18} minZoom={3} ref={mapRef} zoomControl={false}>
 			<TileLayer 
 				url={basemap.value}
 			/>
-			<GeoJSONTile data={geojson} />
+			<TileLayer 
+				url={imageUrl}
+				opacity={imageOpacity}
+			/>
+			<GeoJSONTile data={geojson} ref={geojsonRef}/>
 		</MapContainer>
 	)
 }
@@ -27,7 +39,11 @@ export default function WebMap() {
  * @param {{ color: string, fillColor: string, weight: number }} style Style of the geojson
  * @returns {void}
  */
-function GeoJSONTile({ data, maxZoom=17, minZoom=5, tolerance=5, style={ color: '#0000ff', fillColor: '#0000ff4d', weight: 1 } }) {
+const GeoJSONTile = forwardRef(function GeoJSONTile({ 
+	data, maxZoom=17, minZoom=5, tolerance=5, style={ 
+	color: '#0000ff', fillColor: '#0000ff', weight: 1, opacity: 1, fillOpacity: 0.3
+	} }, ref) {
+
 	// Container
 	const container = useMap();
 		
@@ -48,10 +64,17 @@ function GeoJSONTile({ data, maxZoom=17, minZoom=5, tolerance=5, style={ color: 
 				tolerance,
 				style
 			};
-
+			
+			// GeoJSON tile
 			const tile = vt(data, optionsVector);
+			
+			// Set GeoJSON tile as ref
+			ref.current = tile;
+
+			// Add the tile to map
 			container.addLayer(tile);
 
+			// Clear effect
 			return () => {
 				container.removeLayer(tile);
 			};
@@ -59,4 +82,4 @@ function GeoJSONTile({ data, maxZoom=17, minZoom=5, tolerance=5, style={ color: 
 	}, [ data ]);
 
 	return null;
-}
+})
