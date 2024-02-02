@@ -51,12 +51,12 @@ export default async function composite(body) {
 				image = images.sort('system:time_start', false);
 				break;
 		}
-		image = ee.Image(image.first());
+		image = ee.Image(image.first()).clip(geometry.buffer(1e4).bounds());
 
 		// Visualize image
 		const reduce = image.select(bands).reduceRegion({
 			reducer: ee.Reducer.percentile([2, 98]),
-			scale: 300,
+			scale: 100,
 			maxPixels: 1e13,
 			geometry: image.geometry()
 		});
@@ -66,6 +66,7 @@ export default async function composite(body) {
 			bands: bands,
 			min: bands.map(band => reduce.get(`${band}_p2`)),
 			max: bands.map(band => reduce.get(`${band}_p98`)),
+			gamma: 1.25
 		};
 
 		// Visualized image
@@ -85,8 +86,7 @@ export default async function composite(body) {
 	} catch (error) {
 
 		// If it failed then return it as failed
-		return { ok: false, error: error.message }
+		return { ok: false, message: error.message }
 	}
-
 	
 }

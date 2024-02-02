@@ -183,7 +183,7 @@ export default function Image(){
 					// If the image url is okay then add it to the map
 					setImageUrl(url);
 				} catch (error) {
-					console.log(error.message);
+					console.error(error.message);
 				}
 			}}>Add image to map</button>
 			
