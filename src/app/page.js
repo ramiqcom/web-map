@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic';
-import { useState, createContext, useRef } from 'react';
+import { useState, createContext, useRef, useContext } from 'react';
 import { useEffect } from 'react';
 import shpjs from 'shpjs';
 import { kml } from '@mapbox/togeojson';
@@ -27,6 +27,9 @@ export default function Home() {
   // GeoJSON ref
   const geojsonRef = useRef();
 
+  // Dialog ref
+  const dialogRef = useRef();
+
   // GeoJSON data to add to map
   const [ geojson, setGeojson ] = useState(undefined);
 
@@ -39,14 +42,23 @@ export default function Home() {
   // Image opacity
   const [ imageOpacity, setImageOpacity ] = useState(1);
 
+  // Dialog background color
+  const [ dialogColor, setDialogColor ] = useState('blue');
+
+  // Dialog text
+  const [ dialogText, setDialogText ] = useState('');
+
   // All the states
   const states = {
     mapRef,
     geojsonRef,
+    dialogRef,
     geojson, setGeojson,
     basemap, setBasemap,
     imageUrl, setImageUrl,
-    imageOpacity, setImageOpacity
+    imageOpacity, setImageOpacity,
+    dialogText, setDialogText,
+    dialogColor, setDialogColor
   };
 
   // Use effect to disable window default process
@@ -62,49 +74,33 @@ export default function Home() {
 
       // Try to process the file
       try {
+        // Show modal that say the data is being processed
+        modal({ dialogRef, setDialogText, setDialogColor }, true, 'Processing data...', 'blue');
+
         const file = e.dataTransfer.files[0];
         const fileName = file.name.split('.');
         const name = fileName.at(0);
         const format = fileName.at(-1);
         const geojson = await convert(file, format);
         setGeojson(geojson);
+
+        // Close modal
+        modal({ dialogRef, setDialogText, setDialogColor }, false);
       } catch (error) {
-        throw new Error(error);
+        // Show error
+        modal({ dialogRef, setDialogText, setDialogColor }, true, error.message, 'red');
       }
       
     };
   }, []);
 
-  /**
-   * Function to convert shapefile or KML to geojson
-   * @param {Blob} file 
-   * @param {string} type 
-   */
-  async function convert(file, type){
-    let geojson;
-
-    switch (type){
-      case 'json':
-      case 'geojson':
-        geojson = JSON.parse(await file.text());
-        break;
-      case 'zip':
-        geojson = await shpjs(await file.arrayBuffer());
-        break;
-      case 'kml':
-      case 'kmz':
-        geojson = kml(new DOMParser(await file.text()));
-        break;
-      default:
-        throw new Error('Format is not supported');
-    }
-
-    return geojson;
-  }
-
   return (
     <>
       <Context.Provider value={states}>
+
+        <dialog ref={dialogRef} id='modal' className='flexible vertical' style={{ color: dialogColor }} onClick={() => dialogRef.current.close()}>
+          {dialogText}
+        </dialog>
         
         <div className='flexible gap vertical' id='float'>
           <Layers />
@@ -125,4 +121,49 @@ function LoadingMap() {
       Loading...
     </div> 
   )
+}
+
+/**
+ * Function to convert shapefile or KML to geojson
+ * @param {Blob} file 
+ * @param {string} type 
+ */
+async function convert(file, type){
+  let geojson;
+
+  switch (type){
+    case 'json':
+    case 'geojson':
+      geojson = JSON.parse(await file.text());
+      break;
+    case 'zip':
+      geojson = await shpjs(await file.arrayBuffer());
+      break;
+    case 'kml':
+    case 'kmz':
+      geojson = kml(new DOMParser(await file.text()));
+      break;
+    default:
+      throw new Error('Format is not supported');
+  }
+
+  return geojson;
+}
+
+/**
+ * @param {boolean} open If true then the modal dialog is opened, if false then it will be closed
+ * @param {string} text 
+ * @param {string} color
+ */
+export function modal({ dialogRef, setDialogText, setDialogColor }, open, text, color){
+  // Dialog components
+  const dialog = dialogRef.current;
+
+  if (!open) {
+    dialog.close();
+  } else {
+    setDialogText(text);
+    setDialogColor(color);
+    dialog.showModal();
+  }
 }

@@ -3,13 +3,13 @@ import satellites from '../data/satellite.json' assert { type: "json" };
 import filters from '../data/filter.json' assert { type: "json" };
 import bandsSat from '../data/bands.json' assert { type: "json" };
 import Select from 'react-select';
-import { Context } from "../page";
+import { Context, modal } from "../page";
 import composite from "../server/composite";
 import { bbox, bboxPolygon } from '@turf/turf';
 
 export default function Image(){
 	// Take variable from Context
-	const { geojson, setImageUrl } = useContext(Context);
+	const { geojson, setImageUrl, dialogRef, setDialogText, setDialogColor } = useContext(Context);
 
 	// Time object
 	const miliEndDate = new Date();
@@ -163,6 +163,9 @@ export default function Image(){
 
 			<button disabled={generatorDisabled} onClick={async () => {
 				try {
+					// Show modal that say the image is being processed
+					modal({ dialogRef, setDialogText, setDialogColor }, true, 'Processing image...', 'blue');
+
 					// BBOX polygon
 					const bounds = bboxPolygon(bbox(geojson));
 
@@ -182,8 +185,13 @@ export default function Image(){
 
 					// If the image url is okay then add it to the map
 					setImageUrl(url);
+
+					// Close model if success
+					modal({ dialogRef, setDialogText, setDialogColor }, false);
 				} catch (error) {
-					console.error(error.message);
+
+					// Show error message if it failed
+					modal({ dialogRef, setDialogText, setDialogColor }, true, error.message, 'red');
 				}
 			}}>Add image to map</button>
 			

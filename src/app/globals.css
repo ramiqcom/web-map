@@ -73,3 +73,10 @@ input[type='checkbox'] {
 	padding: 5%;
 	width: 40vh;
 }
+
+#modal {
+	width: 30vh;
+	font-size: large;
+	background-color: white;
+	text-align: center;
+}
