@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gcp build": "next build"
   },
   "dependencies": {
     "@google/earthengine": "^0.1.388",
@@ -16,7 +17,6 @@
     "install": "^0.13.0",
     "leaflet": "^1.9.4",
     "next": "14.1.0",
-    "node-pre-gyp": "^0.17.0",
     "node-self": "^1.0.2",
     "npm": "^10.4.0",
     "pify": "^6.1.0",
@@ -26,8 +26,7 @@
     "react-leaflet": "^4.2.1",
     "react-select": "^5.8.0",
     "reproject-geojson": "^0.5.0",
-    "shpjs": "^4.0.4",
-    "workerpool": "^9.1.0"
+    "shpjs": "^4.0.4"
   },
   "devDependencies": {
     "eslint": "^8",

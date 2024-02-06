@@ -20,7 +20,7 @@ export default function WebMap() {
 	} = useContext(Context);
 
 	return (
-		<MapContainer id='map' zoom={5} center={{ lat: 50, lng: 1 }} maxZoom={18} minZoom={3} ref={mapRef} zoomControl={false}>
+		<MapContainer id='map' zoom={8} center={{ lat: 52.25, lng: 5.5 }} maxZoom={18} minZoom={3} ref={mapRef} zoomControl={false}>
 			<TileLayer 
 				url={basemap.value}
 			/>
