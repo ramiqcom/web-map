@@ -1,10 +1,11 @@
 'use server';
 
 import 'node-self';
-import { authenticateViaPrivateKey, initialize, mapid } from "./promise";
+import { authenticateViaPrivateKey, initialize, getMapId } from "./promise";
 import ee from '@google/earthengine';
 import collections from '../data/collection.json' assert { type: 'json' };
 import clouds from '../data/cloud.json' assert { type: 'json' };
+import pify from 'pify';
 
 /**
  * Filter and generate tile map to show on leaflet map
@@ -51,7 +52,17 @@ export default async function composite({ geojson, date, satellite, bands, filte
 				image = images.sort('system:time_start', false);
 				break;
 		}
-		image = ee.Image(image.first()).clip(geometry.buffer(1e4).bounds());
+
+		// Take the first image
+		image = ee.Image(image.first());
+
+		// Image id
+		const imageMetadata = pify(image.evaluate, { multiArgs: true, errorFirst: false }).bind(image);
+		const [ metadata, errorMetadata ] = await imageMetadata();
+		const id = metadata.id;
+
+		// Clip the image
+		image = image.clip(geometry.buffer(1e4).bounds());
 
 		// Visualize image
 		const reduce = image.select(bands).reduceRegion({
@@ -66,14 +77,14 @@ export default async function composite({ geojson, date, satellite, bands, filte
 			bands: bands,
 			min: bands.map(band => reduce.get(`${band}_p2`)),
 			max: bands.map(band => reduce.get(`${band}_p98`)),
-			gamma: 1.25
+			gamma: 1.5
 		};
 
 		// Visualized image
 		const visualized = image.visualize(vis);
 
 		// URL of the image
-		const [ result, error ] = await mapid({ image: visualized });
+		const [ result, error ] = await getMapId({ image: visualized });
 		
 		// If it error then show the message
 		if (error) {
@@ -81,7 +92,7 @@ export default async function composite({ geojson, date, satellite, bands, filte
 		}
 
 		// If it succed then return it as successfull
-		return { url: result.urlFormat, ok: true }
+		return { url: result.urlFormat, ok: true, id }
 
 	} catch (error) {
 

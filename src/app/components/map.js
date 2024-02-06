@@ -45,7 +45,7 @@ const GeoJSONTile = forwardRef(
 	 */
 	function GeoJSONTile({ 
 		data, maxZoom=17, minZoom=5, tolerance=5, style={ 
-			color: '#0000ff', fillColor: '#0000ff', weight: 1, opacity: 1, fillOpacity: 0.3
+			color: '#0000ff', fillColor: '#0000ff', weight: 0.5, opacity: 1, fillOpacity: 0.1
 		} }, ref) {
 
 		// Container

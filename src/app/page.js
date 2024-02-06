@@ -44,6 +44,9 @@ export default function Home() {
   // Url
   const [ imageUrl, setImageUrl ] = useState('');
 
+  // Image id
+  const [ imageId, setImageId ] = useState(undefined);
+
   // Image opacity
   const [ imageOpacity, setImageOpacity ] = useState(1);
 
@@ -63,7 +66,8 @@ export default function Home() {
     imageUrl, setImageUrl,
     imageOpacity, setImageOpacity,
     dialogText, setDialogText,
-    dialogColor, setDialogColor
+    dialogColor, setDialogColor,
+    imageId, setImageId
   };
 
   // Use effect to disable window default process
@@ -166,7 +170,7 @@ async function convert(file, type){
       geojson = kml(new DOMParser().parseFromString(await file.text(), 'text/xml'));
       break;
     default:
-      throw new Error('Format is not supported');
+      throw new Error('Format is not supported!');
   }
 
   // Check geojson area

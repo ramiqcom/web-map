@@ -13,7 +13,7 @@ import { bbox, bboxPolygon } from '@turf/turf';
  */
 export default function Image(){
 	// Take variable from Context
-	const { geojson, setImageUrl, dialogRef, setDialogText, setDialogColor } = useContext(Context);
+	const { geojson, setImageUrl, dialogRef, setDialogText, setDialogColor, imageId, setImageId } = useContext(Context);
 
 	// Time object
 	const miliEndDate = new Date();
@@ -179,7 +179,7 @@ export default function Image(){
 					const bounds = bboxPolygon(bbox(geojson));
 
 					// Call the image
-					const { url, message, ok } = await composite({
+					const { url, message, ok, id } = await composite({
 						geojson: bounds,
 						date: [ startDate, endDate ],
 						satellite: satellite.value,
@@ -191,6 +191,9 @@ export default function Image(){
 					if (!ok) {
 						throw new Error(message);
 					}
+
+					// Set image id
+					setImageId(id);
 
 					// If the image url is okay then add it to the map
 					setImageUrl(url);

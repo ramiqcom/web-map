@@ -10,4 +10,4 @@ const callback = { multiArgs: true, errorFirst: false };
 // Function to promisfy
 export const authenticateViaPrivateKey = pify(ee.data.authenticateViaPrivateKey);
 export const initialize = pify(ee.initialize);
-export const mapid  = pify(ee.data.getMapId, callback);
+export const getMapId = pify(ee.data.getMapId, callback);
