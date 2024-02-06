@@ -6,17 +6,17 @@ import ee from '@google/earthengine';
 import collections from '../data/collection.json' assert { type: 'json' };
 import clouds from '../data/cloud.json' assert { type: 'json' };
 
-export default async function composite(body) {
+/**
+ * Filter and generate tile map to show on leaflet map
+ * @param {import('@turf/turf').FeatureCollection} geojson
+ * @param {[ String, String ]} date
+ * @param {String} satellite
+ * @param {[ String, String, String ]} bands
+ * @param {String} filter
+ * @returns {{ url: String, message: String?, ok: Boolean }}
+ */
+export default async function composite({ geojson, date, satellite, bands, filter }) {
 	try {
-		// Parameter
-		const {
-			geojson,
-			date,
-			satellite,
-			bands,
-			filter
-		} = body;
-
 		// Parse key JSON for Earth Engine authentication
 		const key = JSON.parse(process.env.EE_KEY);
 

@@ -86,7 +86,7 @@ function Image() {
 	const [ disabled, setDisabled ]= useState(true);
 	
 	useEffect(() => {
-		if (imageUrl.split().length > 1) {
+		if (imageUrl.length > 1) {
 			setDisabled(false);
 		} else {
 			setDisabled(true);

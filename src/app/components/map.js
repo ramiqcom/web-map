@@ -4,7 +4,10 @@ import { Context } from '../page';
 import { useContext, useEffect, forwardRef } from 'react';
 import vt from './vt';
 
-// Leaflet map div
+/**
+ * Leaflet map div
+ * @returns {import("react").ReactComponentElement}
+ */
 export default function WebMap() {
 	// Context data
 	const { 
@@ -30,56 +33,57 @@ export default function WebMap() {
 	)
 }
 
-/**
- * GeoJSON tile components
- * @param {GeoJSON} data GeoJSON object
- * @param {number} maxZoom Maximum zoom 0 - 24 for the tile
- * @param {number} minZoom Minimum zoom 0 - 24 for the tile
- * @param {number} tolerance level of simplify to the tile (1 is original), more value mean more simplify
- * @param {{ color: string, fillColor: string, weight: number }} style Style of the geojson
- * @returns {void}
- */
-const GeoJSONTile = forwardRef(function GeoJSONTile({ 
-	data, maxZoom=17, minZoom=5, tolerance=5, style={ 
-	color: '#0000ff', fillColor: '#0000ff', weight: 1, opacity: 1, fillOpacity: 0.3
-	} }, ref) {
+const GeoJSONTile = forwardRef(
+	/**
+	 * GeoJSON tile components
+	 * @param {GeoJSON} data GeoJSON object
+	 * @param {Number} maxZoom Maximum zoom 0 - 24 for the tile
+	 * @param {Number} minZoom Minimum zoom 0 - 24 for the tile
+	 * @param {Number} tolerance level of simplify to the tile (1 is original), more value mean more simplify
+	 * @param {{ color: String, fillColor: String, weight: Number }} style Style of the geojson
+	 * @returns {import('react').VoidFunctionComponent}
+	 */
+	function GeoJSONTile({ 
+		data, maxZoom=17, minZoom=5, tolerance=5, style={ 
+			color: '#0000ff', fillColor: '#0000ff', weight: 1, opacity: 1, fillOpacity: 0.3
+		} }, ref) {
 
-	// Container
-	const container = useMap();
-		
-	// Add data to map
-	useEffect(() => {
-		if (data) {
-			const bounds = L.geoJSON(data).getBounds();
+		// Container
+		const container = useMap();
 			
-			// Make it to zoom to the geojson
-			container.fitBounds(bounds);
-			
-			// Vector data visualization parameter
-			const optionsVector = {
-				maxZoom: 24,
-				minZoom: 0,
-				maxNativeZoom: maxZoom,
-				minNativeZoom: minZoom,
-				tolerance,
-				style
-			};
-			
-			// GeoJSON tile
-			const tile = vt(data, optionsVector);
-			
-			// Set GeoJSON tile as ref
-			ref.current = tile;
+		// Add data to map
+		useEffect(() => {
+			if (data) {
+				const bounds = L.geoJSON(data).getBounds();
+				
+				// Make it to zoom to the geojson
+				container.fitBounds(bounds);
+				
+				// Vector data visualization parameter
+				const optionsVector = {
+					maxZoom: 24,
+					minZoom: 0,
+					maxNativeZoom: maxZoom,
+					minNativeZoom: minZoom,
+					tolerance,
+					style
+				};
+				
+				// GeoJSON tile
+				const tile = vt(data, optionsVector);
+				
+				// Set GeoJSON tile as ref
+				ref.current = tile;
 
-			// Add the tile to map
-			container.addLayer(tile);
+				// Add the tile to map
+				container.addLayer(tile);
 
-			// Clear effect
-			return () => {
-				container.removeLayer(tile);
-			};
-		}
-	}, [ data ]);
+				// Clear effect
+				return () => {
+					container.removeLayer(tile);
+				};
+			}
+		}, [ data ]);
 
-	return null;
+		return null;
 })

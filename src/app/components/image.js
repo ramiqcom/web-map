@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useId } from "react";
 import satellites from '../data/satellite.json' assert { type: "json" };
 import filters from '../data/filter.json' assert { type: "json" };
 import bandsSat from '../data/bands.json' assert { type: "json" };
@@ -7,6 +7,10 @@ import { Context, modal } from "../page";
 import composite from "../server/composite";
 import { bbox, bboxPolygon } from '@turf/turf';
 
+/**
+ * Image page components
+ * @returns {import("react").ReactComponentElement}
+ */
 export default function Image(){
 	// Take variable from Context
 	const { geojson, setImageUrl, dialogRef, setDialogText, setDialogColor } = useContext(Context);
@@ -97,6 +101,7 @@ export default function Image(){
 				<Select
 					options={satellites}
 					value={satellite}
+					instanceId={useId()}
 					onChange={option => {
 						setSatellite(option);
 						
@@ -122,6 +127,7 @@ export default function Image(){
 				<Select
 					options={filters}
 					value={filter}
+					instanceId={useId()}
 					onChange={option => {
 						setFilter(option);
 					}}
@@ -137,6 +143,7 @@ export default function Image(){
 					<Select
 						options={bands}
 						value={red}
+						instanceId={useId()}
 						onChange={option => {
 							setRed(option);
 						}}
@@ -145,6 +152,7 @@ export default function Image(){
 					<Select
 						options={bands}
 						value={green}
+						instanceId={useId()}
 						onChange={option => {
 							setGreen(option);
 						}}
@@ -153,6 +161,7 @@ export default function Image(){
 					<Select
 						options={bands}
 						value={blue}
+						instanceId={useId()}
 						onChange={option => {
 							setBlue(option);
 						}}
