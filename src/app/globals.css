@@ -111,7 +111,7 @@ button:disabled {
 }
 
 #float {
-	z-index: 9999999999;
+	z-index: 99999;
 	position: absolute;
 	display: flex;
 	margin: 1%;
