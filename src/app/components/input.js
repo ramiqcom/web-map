@@ -4,30 +4,31 @@
  * @param {[{ value: String | Number, label: String }]} props.options 
  * @param {{ value: String | Number, label: String }} props.value
  * @param {Function} props.onChange
- * @param {boolean} props.disabled
+ * @param {Boolean} props.disabled
+ * @param {Boolean} props.visible
  * @returns {import("react").FunctionComponent}
  */
 export function Select(props){
-	const { options, value, onChange, disabled } = props;
+	const { options, value, onChange, disabled, visible=true } = props;
 
-	// Set selected to value
-	const selected = value;
-
-	const optionsComponents = options.map(dict => {
+	const optionsComponents = options.map((dict, index) => {
 		const { value, label } = dict;
-		const selectedOption = value == selected.value ? true : false;
 
 		return (
 			<option
 				value={value} 
 				label={label} 
-				selected={selectedOption}
+				key={index}
 			/>
 		)
 	});
 
 	return (
 			<select
+				value={value.value}
+				style={{
+					display: visible ? 'flex' : 'none'
+				}}
 				disabled={disabled}
 				onChange={e => {
 					onChange(options[e.target.selectedIndex]);

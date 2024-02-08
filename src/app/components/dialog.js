@@ -38,8 +38,6 @@ export function modal(states, open, text, error){
     dialog.showModal();
   }
 
-  console.log(error);
-
   if (error) {
     dialog.onclick = () => dialog.close();
   } else {

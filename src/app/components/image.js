@@ -7,6 +7,8 @@ import { Context } from "../page";
 import composite from "../server/composite";
 import { bbox, bboxPolygon } from '@turf/turf';
 import { modal } from './dialog';
+import visualizations from '../data/visualization.json' assert { type: "json" };
+import indices from '../data/indices.json' assert { type: "json" };
 
 /**
  * Image page components
@@ -14,7 +16,7 @@ import { modal } from './dialog';
  */
 export default function Image(){
 	// Take variable from Context
-	const { geojson, setImageUrl, dialogRef, setDialogText, setDialogColor, imageId, setImageId } = useContext(Context);
+	const { geojson, setImageUrl, dialogRef, setDialogText, setImageId } = useContext(Context);
 
 	// Time object
 	const miliEndDate = new Date();
@@ -33,10 +35,31 @@ export default function Image(){
 	// Bands satellite set
 	const [ bands, setBands ] = useState(bandsSat[satellite.value]);
 
+	// Visualization type
+	const [ visualization, setVisualization ] = useState(visualizations[0]);
+
+	// Visualization choice visibility
+	const [ multiVisible, setMultiVisible ] = useState(true);
+	const [ singleVisible, setSingleVisible ] = useState(false);
+	const [ indiceVisible, setIndiceVisible ] = useState(false);
+
+	// Single band
+	const [ band, setBand ] = useState(bands[3]);
+
 	// Composite bands
 	const [ red, setRed ] = useState(bands[3]);
 	const [ green, setGreen ] = useState(bands[2]);
 	const [ blue, setBlue ] = useState(bands[1]);
+
+	// Indices
+	const [ indice, setIndice ] = useState(indices[0]);
+
+	// Visualization props
+	const visProps = {
+		multi: { visible: setMultiVisible, bands: [ red.value, green.value, blue.value ] },
+		single: { visible: setSingleVisible, bands: [ band.value ] },
+		indices: { visible: setIndiceVisible, bands: [ indice.value ] }
+	};
 
 	// Image generator function disabled
 	const [ generatorDisabled, setGeneratorDisabled ] = useState(true);
@@ -114,7 +137,8 @@ export default function Image(){
 						// Set the new bands set
 						setBands(bandsSat[option.value]);
 						
-						// Return the bands to default RGB
+						// Return the bands to default RGB or Red (single band)
+						setBand(bands[3]);
 						setRed(bands[3]);
 						setGreen(bands[2]);
 						setBlue(bands[1]);
@@ -137,38 +161,73 @@ export default function Image(){
 				/>
 			</div>
 
-			<div>
+			<div className="flexible vertical">
 				<div>
 					Visualization
 				</div>
-				
-				<div className="flexible wide">
-					<Select
-						options={bands}
-						value={red}
-						disabled={generatorDisabled}
-						onChange={option => {
-							setRed(option);
-						}}
-					/>
 
+				<div className="flexible vertical small-gap">
 					<Select
-						options={bands}
-						value={green}
+						options={visualizations}
+						value={visualization}
 						disabled={generatorDisabled}
 						onChange={option => {
-							setGreen(option);
+							setVisualization(option);
+							Object.keys(visProps).map(key => visProps[key].visible( key == option.value ? true : false ));
 						}}
 					/>
+					
+					<div className="flexible wide">
+						<Select
+							options={bands}
+							value={band}
+							visible={singleVisible}
+							disabled={generatorDisabled}
+							onChange={option => {
+								setBand(option);
+							}}
+						/>
 
-					<Select
-						options={bands}
-						value={blue}
-						disabled={generatorDisabled}
-						onChange={option => {
-							setBlue(option);
-						}}
-					/>
+						<Select
+							options={bands}
+							value={red}
+							visible={multiVisible}
+							disabled={generatorDisabled}
+							onChange={option => {
+								setRed(option);
+							}}
+						/>
+
+						<Select
+							options={bands}
+							value={green}
+							visible={multiVisible}
+							disabled={generatorDisabled}
+							onChange={option => {
+								setGreen(option);
+							}}
+						/>
+
+						<Select
+							options={bands}
+							value={blue}
+							visible={multiVisible}
+							disabled={generatorDisabled}
+							onChange={option => {
+								setBlue(option);
+							}}
+						/>
+
+						<Select
+							options={indices}
+							value={indice}
+							visible={indiceVisible}
+							disabled={generatorDisabled}
+							onChange={option => {
+								setIndice(option);
+							}}
+						/>						
+					</div>
 				</div>
 				
 			</div>
@@ -186,8 +245,9 @@ export default function Image(){
 						geojson: bounds,
 						date: [ startDate, endDate ],
 						satellite: satellite.value,
-						bands: [ red.value, green.value, blue.value ],
-						filter: method.value
+						bands: visProps[visualization.value].bands,
+						method: method.value,
+						visualization: visualization.value
 					});
 
 					// Throw error if the result is error
