@@ -1,11 +1,12 @@
 import { useState, useContext, useEffect, useId } from "react";
 import satellites from '../data/satellite.json' assert { type: "json" };
-import filters from '../data/filter.json' assert { type: "json" };
+import methods from '../data/method.json' assert { type: "json" };
 import bandsSat from '../data/bands.json' assert { type: "json" };
-import Select from 'react-select';
-import { Context, modal } from "../page";
+import { Select } from './input';
+import { Context } from "../page";
 import composite from "../server/composite";
 import { bbox, bboxPolygon } from '@turf/turf';
+import { modal } from './dialog';
 
 /**
  * Image page components
@@ -27,7 +28,7 @@ export default function Image(){
 	const [ satellite, setSatellite ] = useState(satellites[0]);
 
 	// Filter state
-	const [ filter, setFilter ] = useState(filters[0]);
+	const [ method, setMethod ] = useState(methods[0]);
 
 	// Bands satellite set
 	const [ bands, setBands ] = useState(bandsSat[satellite.value]);
@@ -61,6 +62,7 @@ export default function Image(){
 					<input 
 						type="date" 
 						value={startDate}
+						disabled={generatorDisabled}
 						onChange={e => {
 							const date = e.target.value;
 							const mili = (new Date(date)).getTime();
@@ -79,6 +81,7 @@ export default function Image(){
 					<input 
 						type="date" 
 						value={endDate}
+						disabled={generatorDisabled}
 						onChange={e => {
 							const date = e.target.value;
 							const mili = (new Date(date)).getTime();
@@ -101,7 +104,7 @@ export default function Image(){
 				<Select
 					options={satellites}
 					value={satellite}
-					instanceId={useId()}
+					disabled={generatorDisabled}
 					onChange={option => {
 						setSatellite(option);
 						
@@ -121,15 +124,15 @@ export default function Image(){
 
 			<div>
 				<div>
-					Filter
+					Method
 				</div>
 
 				<Select
-					options={filters}
-					value={filter}
-					instanceId={useId()}
+					options={methods}
+					value={method}
+					disabled={generatorDisabled}
 					onChange={option => {
-						setFilter(option);
+						setMethod(option);
 					}}
 				/>
 			</div>
@@ -143,7 +146,7 @@ export default function Image(){
 					<Select
 						options={bands}
 						value={red}
-						instanceId={useId()}
+						disabled={generatorDisabled}
 						onChange={option => {
 							setRed(option);
 						}}
@@ -152,7 +155,7 @@ export default function Image(){
 					<Select
 						options={bands}
 						value={green}
-						instanceId={useId()}
+						disabled={generatorDisabled}
 						onChange={option => {
 							setGreen(option);
 						}}
@@ -161,7 +164,7 @@ export default function Image(){
 					<Select
 						options={bands}
 						value={blue}
-						instanceId={useId()}
+						disabled={generatorDisabled}
 						onChange={option => {
 							setBlue(option);
 						}}
@@ -173,7 +176,7 @@ export default function Image(){
 			<button disabled={generatorDisabled} onClick={async () => {
 				try {
 					// Show modal that say the image is being processed
-					modal({ dialogRef, setDialogText, setDialogColor }, true, 'Processing image...', 'blue');
+					modal({ dialogRef, setDialogText }, true, 'Processing image...');
 
 					// BBOX polygon
 					const bounds = bboxPolygon(bbox(geojson));
@@ -184,7 +187,7 @@ export default function Image(){
 						date: [ startDate, endDate ],
 						satellite: satellite.value,
 						bands: [ red.value, green.value, blue.value ],
-						filter: filter.value
+						filter: method.value
 					});
 
 					// Throw error if the result is error
@@ -199,11 +202,11 @@ export default function Image(){
 					setImageUrl(url);
 
 					// Close model if success
-					modal({ dialogRef, setDialogText, setDialogColor }, false);
+					modal({ dialogRef, setDialogText }, false);
 				} catch (error) {
 
 					// Show error message if it failed
-					modal({ dialogRef, setDialogText, setDialogColor }, true, error.message, 'red');
+					modal({ dialogRef, setDialogText }, true, error.message, true);
 				}
 			}}>Add image to map</button>
 			

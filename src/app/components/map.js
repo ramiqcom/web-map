@@ -6,7 +6,7 @@ import vt from './vt';
 
 /**
  * Leaflet map div
- * @returns {import("react").ReactComponentElement}
+ * @returns {import("react").FunctionComponent}
  */
 export default function WebMap() {
 	// Context data
@@ -23,6 +23,7 @@ export default function WebMap() {
 		<MapContainer id='map' zoom={8} center={{ lat: 52.25, lng: 5.5 }} maxZoom={18} minZoom={3} ref={mapRef} zoomControl={false}>
 			<TileLayer 
 				url={basemap.value}
+				attribution={basemap.attribution}
 			/>
 			<TileLayer 
 				url={imageUrl}
@@ -36,17 +37,21 @@ export default function WebMap() {
 const GeoJSONTile = forwardRef(
 	/**
 	 * GeoJSON tile components
-	 * @param {GeoJSON} data GeoJSON object
-	 * @param {Number} maxZoom Maximum zoom 0 - 24 for the tile
-	 * @param {Number} minZoom Minimum zoom 0 - 24 for the tile
-	 * @param {Number} tolerance level of simplify to the tile (1 is original), more value mean more simplify
-	 * @param {{ color: String, fillColor: String, weight: Number }} style Style of the geojson
+	 * @param {Object} body
+	 * @param {GeoJSON} body.data GeoJSON object
+	 * @param {Number} body.maxZoom Maximum zoom 0 - 24 for the tile
+	 * @param {Number} body.minZoom Minimum zoom 0 - 24 for the tile
+	 * @param {Number} body.tolerance level of simplify to the tile (1 is original), more value mean more simplify
+	 * @param {{ color: String, fillColor: String, weight: Number }} body.style Style of the geojson
+	 * @param {import('react').Ref} ref
 	 * @returns {import('react').VoidFunctionComponent}
 	 */
-	function GeoJSONTile({ 
-		data, maxZoom=17, minZoom=5, tolerance=5, style={ 
+	function GeoJSONTile(body, ref) {		
+		const styleDefault = { 
 			color: '#0000ff', fillColor: '#0000ff', weight: 0.5, opacity: 1, fillOpacity: 0.1
-		} }, ref) {
+		};
+
+		const { data, maxZoom=17, minZoom=5, tolerance=5, style=styleDefault } = body;
 
 		// Container
 		const container = useMap();

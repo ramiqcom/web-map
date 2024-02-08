@@ -1,9 +1,12 @@
 import { Context } from "../page";
 import { useContext, useEffect, useId, useState } from "react";
-import Select from 'react-select';
+import { Select } from './input';
 import basemaps from '../data/basemap.json' assert { type: 'json' }
 
-// Layers components
+/**
+ * Layer components
+ * @returns {import("react").FunctionComponent}
+ */
 export default function Layers(){
 	return (
 		<div id="layers" className="flexible vertical gap float-panel">
@@ -14,7 +17,11 @@ export default function Layers(){
 	)
 }
 
-// Basemap
+
+/**
+ * Function component
+ * @returns {import("react").FunctionComponent}
+ */
 function Basemap() {
 	const { basemap, setBasemap } = useContext(Context);
 
@@ -28,13 +35,15 @@ function Basemap() {
 				options={basemaps}
 				value={basemap}
 				onChange={option => setBasemap(option)}
-				instanceId={useId()}
 			/>
 		</div>	
 	)
 }
 
-// Vector layers
+/**
+ * Vector layers components
+ * @returns {import("react").FunctionComponent}
+ */
 function Vector() {
 	const { geojsonRef, mapRef, geojson } = useContext(Context);
 	const [ visible, setVisible ] = useState(true);
@@ -79,7 +88,10 @@ function Vector() {
 	)
 }
 
-// Function for image layer
+/**
+ * Image components
+ * @returns {import("react").FunctionComponent}
+ */
 function Image() {
 	const { setImageOpacity, imageUrl } = useContext(Context);
 	const [ visible, setVisible ] = useState(true);

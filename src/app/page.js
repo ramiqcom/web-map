@@ -5,11 +5,10 @@ import { useState, createContext, useRef } from 'react';
 import { useEffect } from 'react';
 import shpjs from 'shpjs';
 import { kml } from '@mapbox/togeojson';
-import Layers from './components/layers';
 import basemaps from './data/basemap.json' assert { type: 'json' }
-import Image from './components/image';
 import reprojectGeoJSON from 'reproject-geojson';
 import { area } from '@turf/turf';
+import { modal } from './components/dialog';
 
 // Context
 export const Context = createContext();
@@ -18,7 +17,17 @@ export const Context = createContext();
 const MapCanvas = dynamic(() => import('./components/map'), {
   ssr: false,
   loading: () => <LoadingMap />
-})
+});
+
+// Import panel without SSR
+const Panel = dynamic(() => import('./components/panel'), {
+  ssr: false,
+});
+
+// Import Dialog without SSR
+const Dialog = dynamic(() => import('./components/dialog'), {
+  ssr: false,
+});
 
 /**
  * Main react components
@@ -84,7 +93,7 @@ export default function Home() {
       // Try to process the file
       try {
         // Show modal that say the data is being processed
-        modal({ dialogRef, setDialogText, setDialogColor }, true, 'Processing data...', 'blue');
+        modal({ dialogRef, setDialogText }, true, 'Processing data...');
 
         const file = e.dataTransfer.files[0];
         const fileName = file.name.split('.');
@@ -94,10 +103,10 @@ export default function Home() {
         setGeojson(geojson);
 
         // Close modal
-        modal({ dialogRef, setDialogText, setDialogColor }, false);
+        modal({ dialogRef, setDialogText }, false);
       } catch (error) {
         // Show error
-        modal({ dialogRef, setDialogText, setDialogColor }, true, error.message, 'red');
+        modal({ dialogRef, setDialogText }, true, error.message, true);
       }
       
     };
@@ -107,14 +116,9 @@ export default function Home() {
     <>
       <Context.Provider value={states}>
 
-        <dialog ref={dialogRef} id='modal' className='flexible vertical' style={{ color: dialogColor }} onClick={() => dialogRef.current.close()}>
-          {dialogText}
-        </dialog>
+        <Dialog />
         
-        <div className='flexible gap vertical' id='float'>
-          <Layers />
-          <Image />
-        </div>
+        <Panel />
 
         <MapCanvas />
 
@@ -139,7 +143,7 @@ function LoadingMap() {
  * Function to convert shapefile or KML to geojson
  * @param {Blob} file 
  * @param {String} type 
- * @returns {import('@turf/turf').FeatureCollection}
+ * @returns {Promise.<import('@turf/turf').FeatureCollection>}
  */
 async function convert(file, type){
   let geojson;
@@ -182,23 +186,4 @@ async function convert(file, type){
   }
 
   return geojson;
-}
-
-/**
- * @param {Boolean} open If true then the modal dialog is opened, if false then it will be closed
- * @param {String} text 
- * @param {String} color
- * @returns {VoidFunction}
- */
-export function modal({ dialogRef, setDialogText, setDialogColor }, open, text, color){
-  // Dialog components
-  const dialog = dialogRef.current;
-
-  if (!open) {
-    dialog.close();
-  } else {
-    setDialogText(text);
-    setDialogColor(color);
-    dialog.showModal();
-  }
 }
