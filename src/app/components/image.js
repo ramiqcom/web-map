@@ -241,7 +241,7 @@ export default function Image(){
 					const bounds = bboxPolygon(bbox(geojson));
 
 					// Call the image
-					const { url, message="Operation timeout", ok=false, id } = await composite({
+					const { url, message='Operation timeout', ok=false, id } = await composite({
 						geojson: bounds,
 						date: [ startDate, endDate ],
 						satellite: satellite.value,

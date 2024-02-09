@@ -54,6 +54,7 @@ env:
   PROJECT_ID: '${{ vars.PROJECT_ID }}' # TODO: update Google Cloud project id
   SERVICE: '${{ vars.SERVICE_NAME }}' # TODO: update Cloud Run service name
   REGION: '${{ vars.REGION }}' # TODO: update Cloud Run service region
+  EE_KEY: '${{ secrets.EE_KEY }}'
 
 jobs:
   deploy:
