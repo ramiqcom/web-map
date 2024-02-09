@@ -54,7 +54,6 @@ env:
   PROJECT_ID: '${{ vars.PROJECT_ID }}' # TODO: update Google Cloud project id
   SERVICE: '${{ vars.SERVICE_NAME }}' # TODO: update Cloud Run service name
   REGION: '${{ vars.REGION }}' # TODO: update Cloud Run service region
-  EE_KEY: '${{ secrets.EE_KEY }}'
 
 jobs:
   deploy:
@@ -67,6 +66,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        env:
+          EE_KEY: '${{ secrets.EE_KEY }}'
 
       - name: Google Auth
         id: auth
