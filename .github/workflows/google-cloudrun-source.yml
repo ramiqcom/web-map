@@ -73,12 +73,6 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-      - name: 'Create env file'
-        run: |
-          touch .env
-          echo EE_KEY='${{ secrets.EE_KEY }}' >> .env
-          cat .env
-
       - name: Deploy to Cloud Run
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
