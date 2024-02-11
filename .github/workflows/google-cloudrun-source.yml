@@ -69,6 +69,8 @@ jobs:
         sort_keys: false
 
   deploy:
+    needs: create-envfile
+
     # Add 'id-token' with the intended permissions for workload identity federation
     permissions:
       contents: 'read'
