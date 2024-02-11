@@ -67,17 +67,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: 'Create env file'
-        run: |
-          touch .env
-          echo EE_KEY='${{ secrets.EE_KEY }}' >> .env
-          cat .env
-
       - name: Google Auth
         id: auth
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo EE_KEY='${{ secrets.EE_KEY }}' >> .env
+          cat .env
 
       - name: Deploy to Cloud Run
         id: deploy
