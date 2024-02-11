@@ -56,21 +56,7 @@ env:
   REGION: '${{ vars.REGION }}' # TODO: update Cloud Run service region
 
 jobs:
-  create-envfile:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Make envfile
-      uses: SpicyPizza/create-envfile@v2.0
-      with:
-        envkey_EE_KEY: ${{ secrets.EE_KEY }}
-        directory: ./
-        file_name: .env
-        fail_on_empty: false
-        sort_keys: false
-
   deploy:
-    needs: create-envfile
-
     # Add 'id-token' with the intended permissions for workload identity federation
     permissions:
       contents: 'read'
