@@ -71,6 +71,7 @@ jobs:
         run: |
           touch .env
           echo EE_KEY='${{ secrets.EE_KEY }}' >> .env
+          cat .env
 
       - name: Google Auth
         id: auth
