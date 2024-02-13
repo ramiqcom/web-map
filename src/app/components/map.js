@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { Context } from '../page';
 import { useContext, useEffect, forwardRef } from 'react';
 import vt from './vt';
+import { modal } from './dialog';
 
 /**
  * Leaflet map div
@@ -46,7 +47,10 @@ const GeoJSONTile = forwardRef(
 	 * @param {import('react').Ref} ref
 	 * @returns {import('react').VoidFunctionComponent}
 	 */
-	function GeoJSONTile(body, ref) {		
+	function GeoJSONTile(body, ref) {
+		// Take variable from Context
+		const { dialogRef, setDialogText } = useContext(Context);
+		
 		const styleDefault = { 
 			color: '#0000ff', fillColor: '#0000ff', weight: 0.5, opacity: 1, fillOpacity: 0.1
 		};
@@ -59,34 +63,41 @@ const GeoJSONTile = forwardRef(
 		// Add data to map
 		useEffect(() => {
 			if (data) {
-				const bounds = L.geoJSON(data).getBounds();
+				try {
+					const bounds = L.geoJSON(data).getBounds();
 				
-				// Make it to zoom to the geojson
-				container.fitBounds(bounds);
-				
-				// Vector data visualization parameter
-				const optionsVector = {
-					maxZoom: 24,
-					minZoom: 0,
-					maxNativeZoom: maxZoom,
-					minNativeZoom: minZoom,
-					tolerance,
-					style
-				};
-				
-				// GeoJSON tile
-				const tile = vt(data, optionsVector);
-				
-				// Set GeoJSON tile as ref
-				ref.current = tile;
+					// Make it to zoom to the geojson
+					container.fitBounds(bounds);
+					
+					// Vector data visualization parameter
+					const optionsVector = {
+						maxZoom: 24,
+						minZoom: 0,
+						maxNativeZoom: maxZoom,
+						minNativeZoom: minZoom,
+						tolerance,
+						style
+					};
+					
+					// GeoJSON tile
+					const tile = vt(data, optionsVector);
+					
+					// Set GeoJSON tile as ref
+					ref.current = tile;
 
-				// Add the tile to map
-				container.addLayer(tile);
+					// Add the tile to map
+					container.addLayer(tile);
 
-				// Clear effect
-				return () => {
-					container.removeLayer(tile);
-				};
+					// Clear effect
+					return () => {
+						container.removeLayer(tile);
+					};
+
+				} catch (error) {
+					// Show error message if it failed
+					modal({ dialogRef, setDialogText }, true, error.message, true);
+				}
+
 			}
 		}, [ data ]);
 

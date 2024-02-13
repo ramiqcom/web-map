@@ -148,6 +148,9 @@ function LoadingMap() {
 async function convert(file, type){
   let geojson;
 
+  // Set all the type to lowercase
+  type = type.toLowerCase();
+
   switch (type){
     case 'json':
     case 'geojson':
