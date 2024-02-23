@@ -6,7 +6,8 @@ import { useEffect } from 'react';
 import shpjs from 'shpjs';
 import { kml } from '@mapbox/togeojson';
 import basemaps from './data/basemap.json' assert { type: 'json' }
-import reprojectGeoJSON from 'reproject-geojson';
+import reproject from 'reproject';
+import epsg from 'epsg';
 import { area } from '@turf/turf';
 import { modal } from './components/dialog';
 
@@ -156,18 +157,7 @@ async function convert(file, type){
     case 'geojson':
       // Parse geojson
       const json = JSON.parse(await file.text());
-
-      // Projection name
-      const geojsonProjection = json.crs.properties.name;
-
-      // Projection id
-      const crs = geojsonProjection.split(':').at(-1);
-
-      // Reproject
-      geojson = reprojectGeoJSON(json, {
-        from: 'EPSG:' + crs,
-        to: 'EPSG:4326'
-      });               
+      geojson = reproject.toWgs84(json, undefined, epsg);    
       break;
     case 'zip':
       geojson = await shpjs(await file.arrayBuffer());
