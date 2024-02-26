@@ -38,13 +38,16 @@ export default async function composite(body) {
 		const { geojson, date, satellite, bands, method, visualization } = body;
 
 		// Parse key JSON for Earth Engine authentication
+		if (!(process.env.EE_KEY)){
+			throw new Error('EE_KEY is not in environmental variable');
+		}
 		const key = JSON.parse(process.env.EE_KEY);
 
 		// Authenticate
 		await authenticateViaPrivateKey(key);
 
 		// Initialize
-		await initialize(null, null);
+		await initialize();
 
 		// ee.Geometry for filtering image location
 		const geometry = ee.Feature(geojson).geometry();
